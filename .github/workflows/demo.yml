@@ -7,12 +7,19 @@ on:
       - demo
 jobs:
   demo:
-    - id: tmpCreds
-      uses: ThinkThenRant/cert-2-aws-creds@dde1543
-      with:
-          certificate: ${{ secrets.CERTIFICATE }}
-          private_key: ${{ secrets.PRIVATE_KEY }}
-          iot_endpoint: ${{ secrets.IOT_ENDPOINT }}
-          aws_iot_role_alias: 'ThinkThenRant@cert-2-aws-creds'
-    - name: Check whether we can call STS successfully
-      run: aws sts get-caller-identity
+    runs-on: ubuntu-latest
+    steps:
+      - id: tmpCreds
+        uses: ThinkThenRant/cert-2-aws-creds@dde1543
+        with:
+            certificate: ${{ secrets.CERTIFICATE }}
+            private_key: ${{ secrets.PRIVATE_KEY }}
+            iot_endpoint: ${{ secrets.IOT_ENDPOINT }}
+            aws_iot_role_alias: 'ThinkThenRant@cert-2-aws-creds'
+      - name: Check whether we can call STS successfully
+        run: |
+          AWS_ACCESS_KEY_ID=${{ steps.tmpCreds.outputs.aws_access_key_id }} \
+          AWS_SECRET_ACCESS_KEY=${{ steps.tmpCreds.outputs.aws_secret_access_key }} \
+          AWS_SESSION_TOKEN=${{ steps.tmpCreds.outputs.aws_session_token }} \
+          AWS_DEFAULT_REGION=us-west-2 \
+          sts get-caller-identity
