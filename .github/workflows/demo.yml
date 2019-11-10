@@ -4,17 +4,22 @@ on:
   push:
     branches:
       - master
-      - 'releases/*'
-env:
-  INPUT_CERTIFICATE: ${{ secrets.CERTIFICATE }}
-  INPUT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-  INPUT_IOT_ENDPOINT: 'cf7kl723zk243.credentials.iot.us-west-2.amazonaws.com'
-  INPUT_AWS_IOT_ROLE_ALIAS: 'ThinkThenRant@cert-2-aws-creds'
+      - demo
 jobs:
-  test:
+  demo:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - run: npm ci
-    - run: npm run build
-    - run: npm test
+      - id: tmpCreds
+        uses: ThinkThenRant/cert-2-aws-creds@testrelease
+        with:
+            certificate: ${{ secrets.CERTIFICATE }}
+            private_key: ${{ secrets.PRIVATE_KEY }}
+            iot_endpoint: ${{ secrets.IOT_ENDPOINT }}
+            aws_iot_role_alias: 'ThinkThenRant@cert-2-aws-creds'
+      - name: Check whether we can call STS successfully
+        run: |
+          AWS_ACCESS_KEY_ID=${{ steps.tmpCreds.outputs.aws_access_key_id }} \
+          AWS_SECRET_ACCESS_KEY=${{ steps.tmpCreds.outputs.aws_secret_access_key }} \
+          AWS_SESSION_TOKEN=${{ steps.tmpCreds.outputs.aws_session_token }} \
+          AWS_DEFAULT_REGION=us-west-2 \
+          aws sts get-caller-identity
