@@ -1,0 +1,20 @@
+name: Demo
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - 'releases/*'
+env:
+  INPUT_CERTIFICATE: ${{ secrets.CERTIFICATE }}
+  INPUT_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+  INPUT_IOT_ENDPOINT: 'cf7kl723zk243.credentials.iot.us-west-2.amazonaws.com'
+  INPUT_AWS_IOT_ROLE_ALIAS: 'ThinkThenRant@cert-2-aws-creds'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: npm ci
+    - run: npm run build
+    - run: npm test
