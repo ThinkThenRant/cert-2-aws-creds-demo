@@ -17,6 +17,8 @@ jobs:
             iot_endpoint: ${{ secrets.IOT_ENDPOINT }}
             aws_iot_role_alias: 'ThinkThenRant@cert-2-aws-creds'
       - name: Check whether we can call STS successfully
+        # AWS CLI is already available in the Ubuntu image:
+        # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/software-installed-on-github-hosted-runners
         run: |
           AWS_ACCESS_KEY_ID=${{ steps.tmpCreds.outputs.aws_access_key_id }} \
           AWS_SECRET_ACCESS_KEY=${{ steps.tmpCreds.outputs.aws_secret_access_key }} \
