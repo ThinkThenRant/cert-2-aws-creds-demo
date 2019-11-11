@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: tmpCreds
-        uses: ThinkThenRant/cert-2-aws-creds@testrelease
+        uses: ThinkThenRant/cert-2-aws-creds@v0.1.0
         with:
             certificate: ${{ secrets.CERTIFICATE }}
             private_key: ${{ secrets.PRIVATE_KEY }}
